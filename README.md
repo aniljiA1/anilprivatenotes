@@ -1,63 +1,142 @@
-This project uses Supabase as the backend for authentication and data storage.
+# 🗄️ Private Notes Vault (React + Vite)
 
-### Notes Table
+A private, authenticated notes web application where each user can create, view, and delete **their own notes only**.
 
-create table notes (
-id uuid primary key default gen_random_uuid(),
-user_id uuid references auth.users not null,
-title text not null,
-content text not null,
-created_at timestamp with time zone default now()
-);
-Row Level Security (RLS)
-RLS is enabled to ensure users can only access their own notes.
-
-alter table notes enable row level security;
-Policies
-
--- Read own notes
-create policy "Users read own notes"
-on notes for select
-using (auth.uid() = user_id);
-
--- Insert own notes
-create policy "Users insert own notes"
-on notes for insert
-with check (auth.uid() = user_id);
-
--- Delete own notes
-create policy "Users delete own notes"
-on notes for delete
-using (auth.uid() = user_id);
-All data ownership is enforced at the database level, not in the UI.
-
-🔥 **This README section alone shows backend maturity.**
+This project is intentionally minimal and focuses on:
+- Authentication
+- Data ownership
+- Security
+- Clean, distraction-free UI
 
 ---
 
-## 🧠 Why This Is the Correct Approach
+## 🎯 Objective
 
-| Item                 | Reason                      |
-| -------------------- | --------------------------- |
-| SQL in Supabase      | Actual enforcement          |
-| README docs          | Reviewer visibility         |
-| No SQL files in repo | Cleaner, realistic workflow |
-
-Real companies **do NOT expect DB SQL inside frontend repos** unless migrations are used.
+Build a secure notes application that demonstrates a **basic full-stack flow** using Supabase, without unnecessary features or complexity.
 
 ---
 
-## 🎯 Interview Gold Line (Say This)
+## ✨ Features
 
-> “I documented the database schema and Row Level Security policies in the README, while enforcing them directly in Supabase to ensure true backend-level access control.”
+### 🔐 Authentication
+- Email & Password authentication
+- Google OAuth authentication
+- Powered by **Supabase Authentication**
+- Unauthenticated users cannot access notes
+
+### 📝 Notes
+- Create a note (title + content)
+- View a list of personal notes
+- View a single note
+- Delete a note
+- Notes are **private by default**
+
+### 🔒 Security
+- Notes are tied to the authenticated user
+- **Row Level Security (RLS)** enforced at database level
+- Users can only access their own data, even if the frontend is tampered with
 
 ---
 
-If you want, next I can:
+## 🛠️ Tech Stack
 
-- Write a **perfect README.md fully**
-- Add **edit/update policy**
-- Show **how Supabase auto-fills user_id**
-- Review your repo **as an interviewer**
+| Layer | Technology |
+|-----|-----------|
+| Frontend | React |
+| Build Tool | Vite |
+| Styling | Tailwind CSS |
+| Backend | Supabase |
+| Database | Supabase Postgres |
+| Authentication | Supabase Auth (Email + Google OAuth) |
 
-Just say the word 🚀
+---
+
+## 📁 Project Structure
+
+private-notes-vault/
+├─ src/
+│ ├─ components/
+│ │ ├─ AuthForm.jsx
+│ │ ├─ NoteCard.jsx
+│ │ └─ Navbar.jsx
+│ ├─ pages/
+│ │ ├─ Login.jsx
+│ │ ├─ Notes.jsx
+│ │ └─ NoteDetail.jsx
+│ ├─ lib/
+│ │ └─ supabaseClient.js
+│ ├─ App.jsx
+│ ├─ main.jsx
+│ └─ index.css
+├─ .env
+├─ package.json
+└─ README.md
+
+
+---
+
+## 🗃️ Database Schema
+
+### `notes` table
+
+| Column | Type |
+|-----|-----|
+| id | uuid |
+| user_id | uuid (auth.users) |
+| title | text |
+| content | text |
+| created_at | timestamp |
+
+---
+
+## 🔐 Row Level Security (RLS)
+
+All authorization is enforced directly in the database using Supabase Row Level Security.
+
+### Policies:
+- Users can read only their own notes
+- Users can create notes for themselves
+- Users can delete only their own notes
+
+This ensures complete data isolation between users.
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root directory:
+
+
+VITE_SUPABASE_URL=https://qyvkoazsjkjmrxsexaqt.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_KEY
+⚠️ Never expose the service_role key on the client.
+
+🚀 Running Locally
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+Open in browser:
+👉 http://localhost:5173
+
+🧠 UX Philosophy
+Private by default
+
+Minimal interface
+
+No dashboards, tags, or folders
+
+Designed to feel like a personal scratchpad
+
+
+
+Deploy: https://anilprivatenotes.vercel.app/
+
+
+👤 Author
+Anil Kumar
+
+
+
